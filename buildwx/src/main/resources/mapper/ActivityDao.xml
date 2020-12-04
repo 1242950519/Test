@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.buildwx.buildwx.admin.dao.ActivityDao">
+
+    <resultMap type="com.buildwx.buildwx.admin.entity.Activity" id="ActivityMap">
+        <result property="activityid" column="activityId" jdbcType="INTEGER"/>
+        <result property="activityname" column="activityName" jdbcType="VARCHAR"/>
+        <result property="activitytime" column="activityTime" jdbcType="VARCHAR"/>
+        <result property="activitycoverurl" column="activityCoverUrl" jdbcType="VARCHAR"/>
+        <result property="activityaddress" column="activityAddress" jdbcType="VARCHAR"/>
+        <result property="activitystate" column="activityState" jdbcType="OTHER"/>
+        <result property="activityupdatetime" column="activityUpdateTime" jdbcType="VARCHAR"/>
+        <result property="activitycontent" column="activityContent" jdbcType="VARCHAR"/>
+        <result property="activityshareimgurl" column="activityShareImgUrl" jdbcType="VARCHAR"/>
+        <result property="activitysharetext" column="activityShareText" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ActivityMap">
+        select
+          activityId, activityName, activityTime, activityCoverUrl, activityAddress, activityState, activityUpdateTime, activityContent, activityShareImgUrl, activityShareText
+        from wxzk.activity
+        where activityId = #{activityid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ActivityMap">
+        select
+          activityId, activityName, activityTime, activityCoverUrl, activityAddress, activityState, activityUpdateTime, activityContent, activityShareImgUrl, activityShareText
+        from wxzk.activity
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ActivityMap">
+        select
+        activityId, activityName, activityTime, activityCoverUrl, activityAddress, activityState, activityUpdateTime,
+        activityContent, activityShareImgUrl, activityShareText
+        from wxzk.activity
+        <where>
+            <if test="activityid != null">
+                and activityId = #{activityid}
+            </if>
+            <if test="activityname != null and activityname != ''">
+                and activityName = #{activityname}
+            </if>
+            <if test="activitytime != null and activitytime != ''">
+                and activityTime = #{activitytime}
+            </if>
+            <if test="activitycoverurl != null and activitycoverurl != ''">
+                and activityCoverUrl = #{activitycoverurl}
+            </if>
+            <if test="activityaddress != null and activityaddress != ''">
+                and activityAddress = #{activityaddress}
+            </if>
+            <if test="activitystate != null">
+                and activityState = #{activitystate}
+            </if>
+            <if test="activityupdatetime != null and activityupdatetime != ''">
+                and activityUpdateTime = #{activityupdatetime}
+            </if>
+            <if test="activitycontent != null and activitycontent != ''">
+                and activityContent = #{activitycontent}
+            </if>
+            <if test="activityshareimgurl != null and activityshareimgurl != ''">
+                and activityShareImgUrl = #{activityshareimgurl}
+            </if>
+            <if test="activitysharetext != null and activitysharetext != ''">
+                and activityShareText = #{activitysharetext}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="activityid" useGeneratedKeys="true">
+        insert into wxzk.activity(activityName, activityTime, activityCoverUrl, activityAddress, activityState, activityUpdateTime, activityContent, activityShareImgUrl, activityShareText)
+        values (#{activityname}, #{activitytime}, #{activitycoverurl}, #{activityaddress}, #{activitystate}, #{activityupdatetime}, #{activitycontent}, #{activityshareimgurl}, #{activitysharetext})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update wxzk.activity
+        <set>
+            <if test="activityname != null and activityname != ''">
+                activityName = #{activityname},
+            </if>
+            <if test="activitytime != null and activitytime != ''">
+                activityTime = #{activitytime},
+            </if>
+            <if test="activitycoverurl != null and activitycoverurl != ''">
+                activityCoverUrl = #{activitycoverurl},
+            </if>
+            <if test="activityaddress != null and activityaddress != ''">
+                activityAddress = #{activityaddress},
+            </if>
+            <if test="activitystate != null">
+                activityState = #{activitystate},
+            </if>
+            <if test="activityupdatetime != null and activityupdatetime != ''">
+                activityUpdateTime = #{activityupdatetime},
+            </if>
+            <if test="activitycontent != null and activitycontent != ''">
+                activityContent = #{activitycontent},
+            </if>
+            <if test="activityshareimgurl != null and activityshareimgurl != ''">
+                activityShareImgUrl = #{activityshareimgurl},
+            </if>
+            <if test="activitysharetext != null and activitysharetext != ''">
+                activityShareText = #{activitysharetext},
+            </if>
+        </set>
+        where activityId = #{activityid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from wxzk.activity where activityId = #{activityid}
+    </delete>
+
+</mapper>
