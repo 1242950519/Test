@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.buildwx.buildwx.file.dao.CarouselDao">
+
+    <resultMap type="com.buildwx.buildwx.file.entity.Carousel" id="CarouselMap">
+        <result property="carouselid" column="carouselId" jdbcType="OTHER"/>
+        <result property="carouselurl" column="carouselUrl" jdbcType="VARCHAR"/>
+        <result property="carouselanontion" column="carouselAnontion" jdbcType="VARCHAR"/>
+        <result property="activityid" column="activityId" jdbcType="INTEGER"/>
+        <result property="shopid" column="shopId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="CarouselMap">
+        select
+          carouselId, carouselUrl, carouselAnontion, activityId, shopId
+        from wxzk.carousel
+        where carouselId = #{carouselid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="CarouselMap">
+        select
+          carouselId, carouselUrl, carouselAnontion, activityId, shopId
+        from wxzk.carousel
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="CarouselMap">
+        select
+        carouselId, carouselUrl, carouselAnontion, activityId, shopId
+        from wxzk.carousel
+        <where>
+            <if test="carouselid != null">
+                and carouselId = #{carouselid}
+            </if>
+            <if test="carouselurl != null and carouselurl != ''">
+                and carouselUrl = #{carouselurl}
+            </if>
+            <if test="carouselanontion != null and carouselanontion != ''">
+                and carouselAnontion = #{carouselanontion}
+            </if>
+            <if test="activityid != null">
+                and activityId = #{activityid}
+            </if>
+            <if test="shopid != null">
+                and shopId = #{shopid}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="carouselid" useGeneratedKeys="true">
+        insert into wxzk.carousel(carouselUrl, carouselAnontion, shopId)
+        values (#{carouselurl}, #{carouselanontion}, #{shopid})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update wxzk.carousel
+        <set>
+            <if test="carouselurl != null and carouselurl != ''">
+                carouselUrl = #{carouselurl},
+            </if>
+            <if test="carouselanontion != null and carouselanontion != ''">
+                carouselAnontion = #{carouselanontion},
+            </if>
+            <if test="shopid != null">
+                shopId = #{shopid},
+            </if>
+        </set>
+        where carouselId = #{carouselid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from wxzk.carousel where carouselId = #{carouselid}
+    </delete>
+
+</mapper>
