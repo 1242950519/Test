@@ -40,6 +40,6 @@ public class Cdkey implements Serializable {
     /**
      * 店铺状态
      */
-    private int shopState;
+    private boolean shopState;
 
 }

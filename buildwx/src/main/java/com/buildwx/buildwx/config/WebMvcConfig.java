@@ -1,48 +1,61 @@
 package com.buildwx.buildwx.config;
 
+import com.buildwx.buildwx.interceptor.TokenInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.*;
+
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//    告知系统static 当成 静态资源访问/**/
-        //        生产模式下地址
-//        registry.addResourceHandler("/images/**").addResourceLocations("file:C:\\www\\upload\\images\\");
-//        registry.addResourceHandler("/carousel/**").addResourceLocations("file:C:\\www\\upload\\carousel\\");
-//        registry.addResourceHandler("/video/**").addResourceLocations("file:C:\\www\\upload\\video\\");
-//        registry.addResourceHandler("/jianli/**").addResourceLocations("file:C:\\www\\upload\\jianli\\");
-    }
-
-
-
+    @Autowired
+    private TokenInterceptor tokenInterceptor;
 
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").
-                        //允许跨域的域名，可以用*表示允许任何域名使用
-                allowedOrigins("*").
-                allowedMethods("*"). //允许任何方法（post、get等）
-                allowedHeaders("*"). //允许任何请求头
-                allowCredentials(true). //带上cookie信息
-                exposedHeaders(HttpHeaders.SET_COOKIE).maxAge(3600L); //maxAge(3600)表明在3600秒内，不需要再发送预检验请求，可以缓存该结果
-            }
-        };
+    public FilterRegistrationBean<CorsFilter> corsFilter(){
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.addExposedHeader("token");
+        config.setMaxAge(60 * 60 * 24L);
+        source.registerCorsConfiguration("/**", config);
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<CorsFilter>(new CorsFilter(source));
+        // 加载顺序
+        bean.setOrder(FilterRegistrationBean.HIGHEST_PRECEDENCE);
+        return bean;
+
     }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        InterceptorRegistration registration = registry.addInterceptor(tokenInterceptor);
+        //拦截配置
+        registration.addPathPatterns("/system/**");
+        //排除配置
+        registration.excludePathPatterns("/system/sys/login");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        告知系统static 当成 静态资源访问/**/
+//        生产模式下地址
+//        registry.addResourceHandler("/images/**").addResourceLocations("file:C:\\www\\upload\\images\\");
+    }
+
 
     /**
      * ServerEndpointExporter 作用
-     *
+     * <p>
      * 这个Bean会自动注册使用@ServerEndpoint注解声明的websocket endpoint
      *
      * @return
@@ -52,4 +65,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //    serverEndpointExporter() {
 //        return new ServerEndpointExporter();
 //    }
+
+
 }

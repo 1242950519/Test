@@ -17,7 +17,7 @@ import java.util.List;
  * @since 2020-11-27 15:00:01
  */
 @Service("adminService")
-@CacheConfig(cacheNames = "admin")
+@CacheConfig(cacheNames = "adminCache")
 public class AdminServiceImpl implements AdminService {
 
     /**
@@ -64,13 +64,12 @@ public class AdminServiceImpl implements AdminService {
     /**
      * 通过ID查询单条数据
      *
-     * @param username 主键
+     * @param userName 主键
      * @return 实例对象
      */
     @Override
-    @Cacheable(cacheNames = "admin", key = "#username")
-    public Admin login(String username) {
-        return this.adminDao.login(username);
+    public Admin login(String userName) {
+        return this.adminDao.login(userName);
     }
 
     /**
@@ -106,7 +105,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Admin update(Admin admin) {
         this.adminDao.update(admin);
-        return this.login(admin.getUsername());
+        return this.login(admin.getUserName());
     }
 
     /**
@@ -119,4 +118,6 @@ public class AdminServiceImpl implements AdminService {
     public boolean deleteById(String username) {
         return this.adminDao.deleteById(username) > 0;
     }
+
+
 }

@@ -3,13 +3,13 @@
 <mapper namespace="com.buildwx.buildwx.admin.dao.CdkeyDao">
 
     <resultMap type="com.buildwx.buildwx.admin.entity.Cdkey" id="CdkeyMap">
-        <result property="cdkeyid" column="cdkeyId" jdbcType="INTEGER"/>
-        <result property="cdkeydata" column="cdkeyData" jdbcType="VARCHAR"/>
-        <result property="cdkeycreatedate" column="cdkeyCreateDate" jdbcType="VARCHAR"/>
-        <result property="cdkeycostdate" column="cdkeyCostDate" jdbcType="VARCHAR"/>
-        <result property="shopid" column="shopId" jdbcType="INTEGER"/>
-        <result property="shopname" column="shopName" jdbcType="VARCHAR"/>
-        <result property="shopstate" column="shopState" jdbcType="INTEGER"/>
+        <result property="cdkeyId" column="cdkeyId" jdbcType="INTEGER"/>
+        <result property="cdkeyData" column="cdkeyData" jdbcType="VARCHAR"/>
+        <result property="cdkeyCreateDate" column="cdkeyCreateDate" jdbcType="VARCHAR"/>
+        <result property="cdkeyCostDate" column="cdkeyCostDate" jdbcType="VARCHAR"/>
+        <result property="shopId" column="shopId" jdbcType="INTEGER"/>
+        <result property="shopName" column="shopName" jdbcType="VARCHAR"/>
+        <result property="shopState" column="shopState" jdbcType="INTEGER"/>
     </resultMap>
 
     <!--查询单个-->
@@ -17,7 +17,7 @@
         select
           cdkeyId, cdkeyData, cdkeyCreateDate, cdkeyCostDate, shopId, shopName, shopState
         from wxzk.cdkey
-        where cdkeyId = #{cdkeyid}
+        where cdkeyId = #{cdkeyId}
     </select>
 
     <!--查询指定行数据-->
@@ -34,65 +34,69 @@
         cdkeyId, cdkeyData, cdkeyCreateDate, cdkeyCostDate, shopId, shopName, shopState
         from wxzk.cdkey
         <where>
-            <if test="cdkeyid != null">
-                and cdkeyId = #{cdkeyid}
+            <if test="cdkeyId != null">
+                and cdkeyId = #{cdkeyId}
             </if>
-            <if test="cdkeydata != null and cdkeydata != ''">
-                and cdkeyData = #{cdkeydata}
+            <if test="cdkeyData != null and cdkeyData != ''">
+                and cdkeyData = #{cdkeyData}
             </if>
-            <if test="cdkeycreatedate != null and cdkeycreatedate != ''">
-                and cdkeyCreateDate = #{cdkeycreatedate}
+            <if test="cdkeyCreateDate != null and cdkeyCreateDate != ''">
+                and cdkeyCreateDate = #{cdkeyCreateDate}
             </if>
-            <if test="cdkeycostdate != null and cdkeycostdate != ''">
-                and cdkeyCostDate = #{cdkeycostdate}
+            <if test="cdkeyCostDate != null and cdkeyCostDate != ''">
+                and cdkeyCostDate = #{cdkeyCostDate}
             </if>
-            <if test="shopid != null">
-                and shopId = #{shopid}
+            <if test="shopId != null">
+                and shopId = #{shopId}
             </if>
-            <if test="shopname != null and shopname != ''">
-                and shopName = #{shopname}
+            <if test="shopName != null and shopName != ''">
+                and shopName = #{shopName}
             </if>
-            <if test="shopstate != null">
-                and shopState = #{shopstate}
+            <if test="shopState != null">
+                and shopState = #{shopState}
             </if>
         </where>
     </select>
 
     <!--新增所有列-->
-    <insert id="insert" keyProperty="cdkeyid" useGeneratedKeys="true">
+    <insert id="insert" keyProperty="cdkeyId" useGeneratedKeys="true">
         insert into wxzk.cdkey(cdkeyData, cdkeyCreateDate, cdkeyCostDate, shopId, shopName, shopState)
-        values (#{cdkeydata}, #{cdkeycreatedate}, #{cdkeycostdate}, #{shopid}, #{shopname}, #{shopstate})
+        values (#{cdkeyData}, #{cdkeyCreateDate}, #{cdkeyCostDate}, #{shopId}, #{shopName}, #{shopState})
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
         update wxzk.cdkey
         <set>
-            <if test="cdkeydata != null and cdkeydata != ''">
-                cdkeyData = #{cdkeydata},
+            <if test="cdkeyData != null and cdkeyData != ''">
+                cdkeyData = #{cdkeyData},
             </if>
-            <if test="cdkeycreatedate != null and cdkeycreatedate != ''">
-                cdkeyCreateDate = #{cdkeycreatedate},
+            <if test="cdkeyCreateDate != null and cdkeyCreateDate != ''">
+                cdkeyCreateDate = #{cdkeyCreateDate},
             </if>
-            <if test="cdkeycostdate != null and cdkeycostdate != ''">
-                cdkeyCostDate = #{cdkeycostdate},
+            <if test="cdkeyCostDate != null and cdkeyCostDate != ''">
+                cdkeyCostDate = #{cdkeyCostDate},
             </if>
-            <if test="shopid != null">
-                shopId = #{shopid},
+            <if test="shopId != null">
+                shopId = #{shopId},
             </if>
-            <if test="shopname != null and shopname != ''">
-                shopName = #{shopname},
+            <if test="shopName != null and shopName != ''">
+                shopName = #{shopName},
             </if>
-            <if test="shopstate != null">
-                shopState = #{shopstate},
+            <if test="shopState != null">
+                shopState = #{shopState},
             </if>
         </set>
-        where cdkeyId = #{cdkeyid}
+        where cdkeyId = #{cdkeyId}
     </update>
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from wxzk.cdkey where cdkeyId = #{cdkeyid}
+        delete from wxzk.cdkey where cdkeyId = #{cdkeyId}
     </delete>
 
+    <!--  查询记录条数  -->
+    <select id="selectTotals" resultType="java.lang.Integer">
+        select count(*) from wxzk.cdkey
+    </select>
 </mapper>

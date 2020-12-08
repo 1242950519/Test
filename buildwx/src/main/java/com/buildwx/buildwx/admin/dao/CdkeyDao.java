@@ -67,4 +67,10 @@ public interface CdkeyDao {
      */
     int deleteById(Integer cdkeyid);
 
+
+    /**
+     * 查询记录条数
+     * @return 影响行数
+     */
+    int selectTotals();
 }

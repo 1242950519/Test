@@ -13,16 +13,18 @@ import java.io.Serializable;
 @Data
 public class Admin implements Serializable {
     private static final long serialVersionUID = -41672904135328829L;
+
+    private int userId;
     /**
      * 管理员账号
      */
-    private String username;
+    private String userName;
     /**
      * 加密密码
      */
-    private String password;
+    private String passWord;
     /**
      * 账号状态
      */
-    private Integer state;
+    private boolean state;
 }

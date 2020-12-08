@@ -3,23 +3,23 @@
 <mapper namespace="com.buildwx.buildwx.admin.dao.AdminDao">
 
     <resultMap type="com.buildwx.buildwx.admin.entity.Admin" id="AdminMap">
-        <result property="username" column="username" jdbcType="VARCHAR"/>
-        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="userName" column="userName" jdbcType="VARCHAR"/>
+        <result property="userName" column="userName" jdbcType="VARCHAR"/>
         <result property="state" column="state" jdbcType="INTEGER"/>
     </resultMap>
 
     <!--  查询账户与密码是否匹配  -->
     <select id="login" resultMap="AdminMap">
         select
-          username, password, state
+          userName, passWord, state
         from wxzk.admin
-        where username = #{username}
+        where userName = #{userName}
     </select>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="AdminMap">
         select
-          username, password, state
+          userName, passWord, state
         from wxzk.admin
         limit #{offset}, #{limit}
     </select>
@@ -27,13 +27,13 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="AdminMap">
         select
-        username, password, state
+        userName, passWord, state
         from wxzk.admin
         <where>
-            <if test="username != null and username != ''">
+            <if test="userName != null and userName != ''">
                 and username = #{username}
             </if>
-            <if test="password != null and password != ''">
+            <if test="passWord != null and passWord != ''">
                 and password = #{password}
             </if>
             <if test="state != null">
@@ -43,8 +43,8 @@
     </select>
 
     <!--新增所有列-->
-    <insert id="insert" keyProperty="username" useGeneratedKeys="true">
-        insert into wxzk.admin(password, state)
+    <insert id="insert" keyProperty="userName" useGeneratedKeys="true">
+        insert into wxzk.admin(passWord, state)
         values (#{password}, #{state})
     </insert>
 
@@ -52,19 +52,19 @@
     <update id="update">
         update wxzk.admin
         <set>
-            <if test="password != null and password != ''">
-                password = #{password},
+            <if test="passWord != null and passWord != ''">
+                passWord = #{passWord},
             </if>
             <if test="state != null">
                 state = #{state},
             </if>
         </set>
-        where username = #{username}
+        where userName = #{userName}
     </update>
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from wxzk.admin where username = #{username}
+        delete from wxzk.admin where userName = #{userName}
     </delete>
 
 </mapper>

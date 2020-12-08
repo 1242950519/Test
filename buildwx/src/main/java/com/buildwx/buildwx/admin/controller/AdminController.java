@@ -1,17 +1,25 @@
 package com.buildwx.buildwx.admin.controller;
+
 import com.buildwx.buildwx.admin.entity.*;
 import com.buildwx.buildwx.admin.service.ActivityService;
 import com.buildwx.buildwx.admin.service.AdminService;
+import com.buildwx.buildwx.admin.service.CdkeyService;
 import com.buildwx.buildwx.file.entity.Carousel;
 import com.buildwx.buildwx.utils.AxiosResult;
+import com.buildwx.buildwx.utils.RedisUtil;
+import com.buildwx.buildwx.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-import com.buildwx.buildwx.utils.JWTutils;
+import com.buildwx.buildwx.utils.JwtUtils;
+
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * (Admin)表控制层
@@ -32,8 +40,17 @@ public class AdminController {
     @Resource
     private ActivityService activityService;
 
+    @Resource
+    private CdkeyService cdkeyService;
+
     @Autowired
-    private JWTutils jwTutils;
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @Autowired
+    RedisUtil redisUtil;
     /**
      * 通过主键查询单条数据
      *
@@ -41,20 +58,22 @@ public class AdminController {
      * @return token code msg
      */
     @RequestMapping("login")
-    public AxiosResult login(Admin admin) throws  Exception{
-        log.info("管理员{}登陆中",admin);
-        try{
-            Admin login = adminService.login(admin.getUsername());
-            if (admin.getPassword().equals(login.getPassword())){
+    public AxiosResult login(Admin admin) {
+        log.info("管理员{}登陆中", admin);
+        Admin login = adminService.login(admin.getUserName());
+        log.info("账户信息：{}", login);
+        if (!StringUtils.isNull(login)) {
+            if (admin.getPassWord().equals(login.getPassWord())) {
                 AxiosResult axiosResult = AxiosResult.success();
-                String token = jwTutils.createAdminToken(admin);
+                String token = jwtUtils.createAdminToken(admin.getUserName());
+                log.info("用户：{}生成的token值为：{}", admin.getUserName(), token);
                 axiosResult.put("token", token);
                 return axiosResult;
-            }else {
-                return AxiosResult.error("密码错误或者账户不存在");
+            } else {
+                return AxiosResult.error("密码错误");
             }
-        }catch (Exception e){
-            return AxiosResult.error("密码错误或者账户不存在");
+        }else {
+            return AxiosResult.error("账户不存在");
         }
     }
 
@@ -67,7 +86,7 @@ public class AdminController {
 
     @RequestMapping("getChartDataInfo/{type}")
     public AxiosResult getChartDataInfo(@PathVariable String type) {
-        log.info("获取访问数据统计,流量类型{}",type);
+        log.info("获取访问数据统计,流量类型{}", type);
         AxiosResult axiosResult = AxiosResult.success();
         return axiosResult;
     }
@@ -89,7 +108,7 @@ public class AdminController {
 
     @RequestMapping("getChartsData")
     public AxiosResult getChartsData(SearchInfo searchInfo) {
-        log.info("获取数据分析,搜索查询，接口值：/sys/getChartsData。起始日期:{},截止日期:{}",searchInfo.getStartTime(), searchInfo.getEndTime());
+        log.info("获取数据分析,搜索查询，接口值：/sys/getChartsData。起始日期:{},截止日期:{}", searchInfo.getStartTime(), searchInfo.getEndTime());
         AxiosResult axiosResult = AxiosResult.success();
         return axiosResult;
     }
@@ -111,21 +130,21 @@ public class AdminController {
 
     @RequestMapping("getSeachTypeData")
     public AxiosResult getSeachTypeData(SearchInfo searchInfo) {
-        log.info("获取数据分析,搜索查询，接口值：/sys/getDataSumRate,查询时间：{}，查询类型:{}",searchInfo.getData(),searchInfo.getType());
+        log.info("获取数据分析,搜索查询，接口值：/sys/getDataSumRate,查询时间：{}，查询类型:{}", searchInfo.getData(), searchInfo.getType());
         AxiosResult axiosResult = AxiosResult.success();
         return axiosResult;
     }
 
 
     /*轮播接口
-    * 0 主页轮播
-    * 1 美食轮播
-    * 2 购物轮播
-    * 3 游玩轮播
-    * */
+     * 0 主页轮播
+     * 1 美食轮播
+     * 2 购物轮播
+     * 3 游玩轮播
+     * */
     @RequestMapping("getCarousel/{type}")
     public AxiosResult getCarousel(@PathVariable int type, PageInfo pageInfo) {
-        log.info("获取数据分析,搜索查询，接口值：/sys/getCarousel/{},分页参数：{}",type, pageInfo);
+        log.info("获取数据分析,搜索查询，接口值：/sys/getCarousel/{},分页参数：{}", type, pageInfo);
         AxiosResult axiosResult = AxiosResult.success();
         return axiosResult;
     }
@@ -141,7 +160,7 @@ public class AdminController {
 
     @RequestMapping("getGradeInfo")
     public AxiosResult getGradeInfo(PageInfo pageInfo) {
-        log.info("获取数据分析,搜索查询，接口值：/sys/getGradeInfo,参数：{}",pageInfo);
+        log.info("获取数据分析,搜索查询，接口值：/sys/getGradeInfo,参数：{}", pageInfo);
         AxiosResult axiosResult = AxiosResult.success();
         return axiosResult;
     }
@@ -173,23 +192,23 @@ public class AdminController {
 
     @RequestMapping("getActivityTableInfo")
     public AxiosResult getActivityTableInfo(PageInfo pageInfo) {
-        log.info("获取数据分析,搜索查询，接口值：/sys/getActivityTableInfo,分页参数:{}",pageInfo);
+        log.info("获取数据分析,搜索查询，接口值：/sys/getActivityTableInfo,分页参数:{}", pageInfo);
         AxiosResult axiosResult = AxiosResult.success();
         return axiosResult;
     }
 
     @RequestMapping("insertCarousel")
     public AxiosResult insertCarousel(Carousel carousel) {
-        log.info("添加轮播图,活动ID：{}，图片路径：{}",carousel.getActivityId(),carousel.getCarouselUrl());
+        log.info("添加轮播图,活动ID：{}，图片路径：{}", carousel.getActivityId(), carousel.getCarouselUrl());
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
 
     @RequestMapping("getHistoryActivityInfo/{shopId}")
-    public AxiosResult getHistoryActivityInfo(@PathVariable int shopId ,PageInfo pageInfo) {
+    public AxiosResult getHistoryActivityInfo(@PathVariable int shopId, PageInfo pageInfo) {
         log.info("获取历史活动，接口值：/sys/getHistoryActivityInfo,参数：{},分页：{}", shopId, pageInfo);
         AxiosResult axiosResult = AxiosResult.success();
         return axiosResult;
@@ -201,7 +220,7 @@ public class AdminController {
         log.info("添加活动管理，接口值：/sys/saveAddCarousel, 活动信息：{}", activity);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
@@ -210,26 +229,26 @@ public class AdminController {
         log.info("修改活动管理，接口值：/sys/editActivityInfo, 活动信息：{}", activity);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
 
     @RequestMapping("searchUserInfoByTel/{tel}")
     public AxiosResult searchUserInfoByTel(@PathVariable String tel, PageInfo pageInfo) {
-        log.info("查询用户信息，接口值：/sys/searchUserInfoByTel/{}，分页信息：{}", tel,pageInfo);
+        log.info("查询用户信息，接口值：/sys/searchUserInfoByTel/{}，分页信息：{}", tel, pageInfo);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
     @RequestMapping("searchUserInfoByName/{Name}")
     public AxiosResult searchUserInfoByName(@PathVariable String Name, PageInfo pageInfo) {
-        log.info("查询用户信息，接口值：/sys/searchUserInfoByName/{}，分页信息：{}", Name,pageInfo);
+        log.info("查询用户信息，接口值：/sys/searchUserInfoByName/{}，分页信息：{}", Name, pageInfo);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
@@ -238,7 +257,7 @@ public class AdminController {
         log.info("查询用户信息，接口值：/sys/saveChangedUserRemark,用户信息: {}，", user.getUserRemark());
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
@@ -248,26 +267,26 @@ public class AdminController {
         log.info("查询用户信息，接口值：/sys/getUserInfo,分页信息: {}，", pageInfo);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
 
     @RequestMapping("searchUserCommentByTel/{tel}")
     public AxiosResult searchUserCommentByTel(@PathVariable String tel, PageInfo pageInfo) {
-        log.info("查询用户信息，接口值：/sys/searchUserCommentByTel/{}，分页信息：{}", tel,pageInfo);
+        log.info("查询用户信息，接口值：/sys/searchUserCommentByTel/{}，分页信息：{}", tel, pageInfo);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
     @RequestMapping("searchUserCommentByName/{Name}")
     public AxiosResult searchUserCommentByName(@PathVariable String Name, PageInfo pageInfo) {
-        log.info("查询用户信息，接口值：/sys/searchUserCommentByName/{}，分页信息：{}", Name,pageInfo);
+        log.info("查询用户信息，接口值：/sys/searchUserCommentByName/{}，分页信息：{}", Name, pageInfo);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
@@ -284,26 +303,26 @@ public class AdminController {
         log.info("查询用户信息，接口值：/sys/changeCommentState,评论信息: {}，", comment);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
     @RequestMapping("getUserCommentInfo")
     public AxiosResult getUserCommentInfo(PageInfo pageInfo) {
-        log.info("查询用户信息，接口值：/sys/getUserCommentInfo，分页信息：{}",pageInfo);
+        log.info("查询用户信息，接口值：/sys/getUserCommentInfo，分页信息：{}", pageInfo);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
 
     @RequestMapping("getReplayCommentInfo/{commentId}")
-    public AxiosResult getReplayCommentInfo(@PathVariable int commentId,  PageInfo pageInfo) {
-        log.info("查询用户信息，接口值：/sys/getUserCommentInfo，查询参数：{} ，分页信息：{}", commentId , pageInfo);
+    public AxiosResult getReplayCommentInfo(@PathVariable int commentId, PageInfo pageInfo) {
+        log.info("查询用户信息，接口值：/sys/getUserCommentInfo，查询参数：{} ，分页信息：{}", commentId, pageInfo);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
@@ -319,17 +338,23 @@ public class AdminController {
         log.info("查询用户信息，接口值：/sys/changeCommentState,评论信息: {}，", replay);
         /*逻辑区域*/
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("保存成功", 200);
         return axiosResult;
     }
 
 
     @RequestMapping("getCdkeyInfo")
+//    @Cacheable(cacheNames = "cdkey", key = "'cdkeyList'")
     public AxiosResult getCdkeyInfo(PageInfo pageInfo) {
-        log.info("查询用户信息，接口值：/sys/getCdkeyInfo，分页信息：{}",pageInfo);
+        log.info("查询用户信息，接口值：/sys/getCdkeyInfo，分页信息：{}", pageInfo);
         /*逻辑区域*/
+        int currentPage = (pageInfo.getCurrentPage() - 1) * pageInfo.getPageSize();
+        List<Cdkey> cdkeys = cdkeyService.queryAllByLimit(currentPage, pageInfo.getPageSize());
+        int totals = cdkeyService.selectTotals();
         AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
+        axiosResult.put("cdkeyInfo", cdkeys);
+        axiosResult.put("保存成功", 200);
+        axiosResult.put("totals", totals);
         return axiosResult;
     }
 
@@ -338,16 +363,24 @@ public class AdminController {
     public AxiosResult changeShopState(Cdkey cdkey) {
         log.info("查询用户信息，接口值：/sys/changeShopState, cdkey信息: {}，", cdkey);
         /*逻辑区域*/
-        AxiosResult axiosResult = AxiosResult.success();
-        axiosResult.put("保存成功",200);
-        return axiosResult;
+        int update = cdkeyService.update(cdkey);
+        if (update > 0) {
+            return AxiosResult.success("修改成功");
+        } else {
+            return AxiosResult.error("修改失败");
+        }
     }
 
-    @RequestMapping("deleteShop/{shopId}")
-    public AxiosResult deleteShop(@PathVariable int shopId) {
-        log.info("删除活动，接口值：/sys/deleteShop,参数: {}", shopId);
-        AxiosResult axiosResult = AxiosResult.success();
-        return axiosResult;
+    @RequestMapping("deleteCdkey/{cdkeyId}")
+    public AxiosResult deleteCdkey(@PathVariable int cdkeyId) {
+        log.info("删除活动，接口值：/sys/deleteCdkey,参数: {}", cdkeyId);
+        boolean b = cdkeyService.deleteById(cdkeyId);
+        int totals = cdkeyService.selectTotals();
+        if (b) {
+            return  AxiosResult.success(totals);
+        } else {
+            return  AxiosResult.error();
+        }
     }
 
 

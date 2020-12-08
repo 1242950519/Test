@@ -1,8 +1,11 @@
 package com.buildwx.buildwx.utils;
+import com.buildwx.buildwx.admin.entity.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -183,7 +186,7 @@ public final class RedisUtil {
      * @param key 键
      * @param map 对应多个键值
      */
-    public boolean hmset(String key, Map<String, Object> map) {
+    public boolean hmset(String key, HashMap<String, Admin> map) {
         try {
             redisTemplate.opsForHash().putAll(key, map);
             return true;

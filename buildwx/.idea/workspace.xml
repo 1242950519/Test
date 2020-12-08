@@ -22,16 +22,16 @@
     <expand>
       <path>
         <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="wxzk@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="wxzk@139.196.40.48" type="feb32156:DbDataSourceImpl" />
       </path>
       <path>
         <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="wxzk@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="wxzk@139.196.40.48" type="feb32156:DbDataSourceImpl" />
         <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
       </path>
       <path>
         <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="wxzk@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="wxzk@139.196.40.48" type="feb32156:DbDataSourceImpl" />
         <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
         <item name="wxzk: schema" type="76f4a085:MysqlImplModel$Schema" />
       </path>
@@ -64,7 +64,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../springBootDemo01" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="editing.templates" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -117,6 +117,38 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="JwtConfig.createAdminToken" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="buildwx" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.buildwx.buildwx.config.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.buildwx.buildwx.config" />
+      <option name="MAIN_CLASS_NAME" value="com.buildwx.buildwx.config.JwtConfig" />
+      <option name="METHOD_NAME" value="createAdminToken" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JwtConfig.verifyToken" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="buildwx" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.buildwx.buildwx.config.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.buildwx.buildwx.config" />
+      <option name="MAIN_CLASS_NAME" value="com.buildwx.buildwx.config.JwtConfig" />
+      <option name="METHOD_NAME" value="verifyToken" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="BuildwxApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="buildwx" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.buildwx.buildwx.BuildwxApplication" />
@@ -130,6 +162,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.JwtConfig.verifyToken" />
+        <item itemvalue="JUnit.JwtConfig.createAdminToken" />
         <item itemvalue="JUnit.BuildwxApplicationTests.contextLoads" />
         <item itemvalue="Application.TestPing" />
       </list>
@@ -161,7 +195,7 @@
       <workItem from="1605077598910" duration="5508000" />
       <workItem from="1605576999725" duration="8376000" />
       <workItem from="1605661132086" duration="22721000" />
-      <workItem from="1606290554004" duration="62296000" />
+      <workItem from="1606290554004" duration="101007000" />
     </task>
     <servers />
   </component>

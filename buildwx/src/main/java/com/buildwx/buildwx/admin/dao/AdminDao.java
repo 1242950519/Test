@@ -20,10 +20,10 @@ public interface AdminDao {
     /**
      * 通过ID查询单条数据
      *
-     * @param username 主键
+     * @param userName 主键
      * @return 实例对象
      */
-    Admin login(String username);
+    Admin login(String userName);
 
     /**
      * 查询指定行数据
@@ -66,5 +66,4 @@ public interface AdminDao {
      * @return 影响行数
      */
     int deleteById(String username);
-
 }

@@ -3,6 +3,7 @@ package com.buildwx.buildwx.admin.service.impl;
 import com.buildwx.buildwx.admin.dao.CdkeyDao;
 import com.buildwx.buildwx.admin.entity.Cdkey;
 import com.buildwx.buildwx.admin.service.CdkeyService;
+import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -15,6 +16,7 @@ import java.util.List;
  * @since 2020-12-02 16:29:58
  */
 @Service("cdkeyService")
+@CacheConfig(cacheNames = "adminCache")
 public class CdkeyServiceImpl implements CdkeyService {
     @Resource
     private CdkeyDao cdkeyDao;
@@ -38,6 +40,7 @@ public class CdkeyServiceImpl implements CdkeyService {
      * @return 对象列表
      */
     @Override
+    @CachePut(value = "cdKeys")
     public List<Cdkey> queryAllByLimit(int offset, int limit) {
         return this.cdkeyDao.queryAllByLimit(offset, limit);
     }
@@ -61,9 +64,8 @@ public class CdkeyServiceImpl implements CdkeyService {
      * @return 实例对象
      */
     @Override
-    public Cdkey update(Cdkey cdkey) {
-        this.cdkeyDao.update(cdkey);
-        return this.queryById(cdkey.getCdkeyId());
+    public int update(Cdkey cdkey) {
+        return this.cdkeyDao.update(cdkey);
     }
 
     /**
@@ -73,7 +75,19 @@ public class CdkeyServiceImpl implements CdkeyService {
      * @return 是否成功
      */
     @Override
+    @CacheEvict(key = "#cdkeyid")
     public boolean deleteById(Integer cdkeyid) {
         return this.cdkeyDao.deleteById(cdkeyid) > 0;
+    }
+
+    /**
+     * 查询记录条数
+     *
+     * @return 影响行数
+     */
+    @Override
+    @Cacheable
+    public int selectTotals() {
+        return this.cdkeyDao.selectTotals();
     }
 }

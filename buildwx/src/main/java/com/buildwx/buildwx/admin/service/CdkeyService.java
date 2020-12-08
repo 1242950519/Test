@@ -1,6 +1,7 @@
 package com.buildwx.buildwx.admin.service;
 
 import com.buildwx.buildwx.admin.entity.Cdkey;
+import org.springframework.cache.annotation.EnableCaching;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public interface CdkeyService {
      * @param cdkey 实例对象
      * @return 实例对象
      */
-    Cdkey update(Cdkey cdkey);
+    int update(Cdkey cdkey);
 
     /**
      * 通过主键删除数据
@@ -53,4 +54,10 @@ public interface CdkeyService {
      */
     boolean deleteById(Integer cdkeyid);
 
+
+    /**
+     * 查询记录条数
+     * @return 影响行数
+     */
+    int selectTotals();
 }
